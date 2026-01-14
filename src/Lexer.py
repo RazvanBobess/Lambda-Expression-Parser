@@ -58,27 +58,29 @@ class Lexer:
 
             if best_token is not None:
                 self.dfa_final_map[dfa_state] = (best_token, best_prio)
-    
+
     def lex(self, word: str) -> list[tuple[str, str]]:
         result = []
         i = 0
         line = 0
 
+        # aux = 0
+
         while i < len(word):
             current_state = self.dfa.q0
-
             last_final_index = -1
             last_final_state = None
-
             j = i
 
             while j < len(word):
                 symbol = word[j]
 
-                if (current_state, symbol) not in self.dfa.d:
+                next_state = self.dfa.d.get((current_state, symbol))
+
+                if not next_state:
                     break
 
-                current_state = self.dfa.d[(current_state, symbol)]
+                current_state = next_state
 
                 if current_state in self.dfa_final_map:
                     last_final_index = j
@@ -87,18 +89,16 @@ class Lexer:
                 j += 1
             
             if last_final_index == -1:
-                if j == len(word) and i == j:
-                    if i == len(word):
-                        return []
-                    if j == len(word):
-                        return[("", f"No viable alternative at character EOF, line {line}")]
-                    else:
-                        return[("", f"No viable alternative at character {i}, line {line}")]
+                error_line = line + word[i:j].count('\n')
+
+                if j == len(word):
+                    return[("", f"No viable alternative at character EOF, line {error_line}")]
                 else:
-                    if j == len(word):
-                        return [("", f"No viable alternative at character EOF, line {line}")]
-                    else:
-                        return [("", f"No viable alternative at character {i}, line {line}")]
+                    last_new_line = word.rfind('\n', 0, j)
+                    if last_new_line != -1:
+                        j = j - last_new_line - 1
+
+                    return[("", f"No viable alternative at character {j}, line {error_line}")]
             else:
                 token_name, _ = self.dfa_final_map[last_final_state]
                 token_value = word[i:last_final_index + 1]
@@ -108,7 +108,4 @@ class Lexer:
 
                 i = last_final_index + 1
 
-        print(result)
-
         return result
-
