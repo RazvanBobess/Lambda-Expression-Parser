@@ -1,10 +1,10 @@
 {
-    "LAMBDA": "??",
-    "LPAREN": "??",
-    "RPAREN": "??",
-    "POINT": "??",
-    "VAR": "??",
-    "OP": "??",
-    "SPACE": "??",
-    "NUMBER": "??"
+    "LAMBDA": "\\\\",
+    "LPAREN": "\\(",
+    "RPAREN": "\\)",
+    "POINT": "\\.",
+    "VAR": "[a-zA-Z][a-zA-Z0-9]*",
+    "OP": "[+\\-*/]",
+    "SPACE": "\\ ",
+    "NUMBER": "[0-9]+"
 }

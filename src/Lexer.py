@@ -64,8 +64,6 @@ class Lexer:
         i = 0
         line = 0
 
-        # aux = 0
-
         while i < len(word):
             current_state = self.dfa.q0
             last_final_index = -1

@@ -8,5 +8,7 @@ class Parser():
 
     
     def parse(self, input: str) -> str:
-        pass
-        
+        tokens = self.lexer.lex(input)
+        new_tokens = [t for t in tokens if t != '\\ ']
+
+        return self.grammar.cykParse(new_tokens)

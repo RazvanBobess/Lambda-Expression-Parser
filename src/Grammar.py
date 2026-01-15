@@ -37,7 +37,35 @@ class Grammar:
         self.S = S # simbolul de start
         
     def cykParse(self, w: list[tuple[str, str]]):
-        pass
+        n = len(w)
+
+        P = [[set() for _ in range(n)] for _ in range(n + 1)]
+        back = {}
+
+        for s in range(n):
+            terminal_symbol = w[s][0]
+
+            for (lhs, rhs1, rhs2) in self.R:
+                if rhs2 is None and rhs1 == terminal_symbol:
+                    P[1][s].add(lhs)
+
+        for l in range(2, n + 1):
+            for s in range(n - l + 1):
+                for p in range(1, l):
+
+                    for (lhs, rhs1, rhs2) in self.R:
+                        if rhs2 is not None:
+                            if rhs1 in P[p][s] and rhs2 in P[l - p][s + p]:
+                                P[l][s].add(lhs)
+
+                                key = (l, s, lhs)
+                                if key not in back:
+                                    back[key] = []
+                                back[key].append((p, rhs1, rhs2))
+        if self.S in P[n][0]:
+            return back
+        else:
+            return "not a member of language"
         
 
             
