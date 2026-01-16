@@ -9,6 +9,6 @@ class Parser():
     
     def parse(self, input: str) -> str:
         tokens = self.lexer.lex(input)
-        new_tokens = [t for t in tokens if t != '\\ ']
+        new_tokens = [t for t in tokens if t[0] != "SPACE"]
 
         return self.grammar.cykParse(new_tokens)

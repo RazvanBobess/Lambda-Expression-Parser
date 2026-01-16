@@ -39,33 +39,46 @@ class Grammar:
     def cykParse(self, w: list[tuple[str, str]]):
         n = len(w)
 
-        P = [[set() for _ in range(n)] for _ in range(n + 1)]
-        back = {}
+        if n == 0:
+            for (lhs, rhs1, rhs2) in self.R:
+                if lhs == self.S and rhs1 == EPSILON and rhs2 is None:
+                    return ParseTree(self.S)
+            return "not a member of language"
 
-        for s in range(n):
-            terminal_symbol = w[s][0]
+        DP = [[{} for _ in range(n)] for _ in range(n)]
+
+        for i in range(n):
+            terminal_type = w[i][0]
+            token_tuple = w[i]
 
             for (lhs, rhs1, rhs2) in self.R:
-                if rhs2 is None and rhs1 == terminal_symbol:
-                    P[1][s].add(lhs)
+                if rhs2 is None and rhs1 == terminal_type:
+                    leaf_node = ParseTree(lhs, token_tuple)
+                    DP[i][i][lhs] = leaf_node
 
-        for l in range(2, n + 1):
-            for s in range(n - l + 1):
-                for p in range(1, l):
+        for length in range(2, n + 1):
+            for i in range(0, n - length + 1):
+                j = i + length - 1
 
+                for k in range(i, j):
                     for (lhs, rhs1, rhs2) in self.R:
                         if rhs2 is not None:
-                            if rhs1 in P[p][s] and rhs2 in P[l - p][s + p]:
-                                P[l][s].add(lhs)
+                            left_cell = DP[i][k]
+                            right_cell = DP[k + 1][j]
 
-                                key = (l, s, lhs)
-                                if key not in back:
-                                    back[key] = []
-                                back[key].append((p, rhs1, rhs2))
-        if self.S in P[n][0]:
-            return back
+                            if rhs1 in left_cell and rhs2 in right_cell:
+                                new_node = ParseTree(lhs)
+                                new_node.add_children(left_cell[rhs1])
+                                new_node.add_children(right_cell[rhs2])
+
+                                DP[i][j][lhs] = new_node
+
+        start_cell = DP[0][n - 1]
+        if self.S in start_cell:
+            return start_cell[self.S].to_string()
         else:
             return "not a member of language"
+
         
 
             
