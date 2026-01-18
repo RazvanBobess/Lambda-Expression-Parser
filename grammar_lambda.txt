@@ -3,14 +3,10 @@ expr: NUMBER
 expr: int_lambda int_var_expr
 expr: int_lparen int_rparen_expr
 expr: expr int_right_expr
-
 int_var_expr: int_var int_point_expr
 int_point_expr: int_point expr
-
 int_rparen_expr: expr int_rparen
-
 int_right_expr: int_op expr
-
 int_lambda: LAMBDA
 int_var: VAR
 int_point: POINT
